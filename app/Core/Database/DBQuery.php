@@ -120,7 +120,6 @@ class DBQuery
         return match ($this->type) {
             'select' => function () use ($db) {
                 $query = $this->getSelectQuery();
-                var_dump($query);
                 return $db->execute($query, $this->getConditionsValues(), true);
             }
         };

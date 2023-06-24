@@ -1,11 +1,11 @@
 <?php
 namespace App\Controller;
 use App\Core\Database\DBQuery;
-use app\Core\Http\Response;
+use App\Core\Http\Response;
 
 class UserController extends BaseController
 {
-    public function index($user_id): \app\Core\Http\Response
+    public function index($user_id): Response
     {
         return Response::getResponse()->status(200)
             ->message('Index')
