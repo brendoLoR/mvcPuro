@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core;
+namespace app\Core\Http;
 
 /**
  * core general propose Request class

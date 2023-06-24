@@ -2,6 +2,11 @@
 
 namespace App\Core;
 
+use App\Core\Database\DB;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
+use App\Core\Http\Route;
+
 /**
  * initialize Request and Response
  */
@@ -16,12 +21,14 @@ require_once __DIR__ . '/../../routes/api.php';
 $action = ((new Route())($routes, $request->uri));
 
 foreach ($action['middlewares'] as $middleware) {
-    if (!(new $middleware)($request)) {
-        try {
-            Response::getResponse()->status(419)->send();
-        } catch (\Exception $e) {
-            Response::getResponse()->status(500)->send(noBody: true);
-        }
+    if ((new $middleware)($request)) {
+        continue;
+    }
+    try {
+        Response::getResponse()->status(419)->send();
+    } catch (\Exception $e) {
+        Response::getResponse()->status(500)->send(noBody: true);
+
     }
 }
 
