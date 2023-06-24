@@ -14,5 +14,8 @@
       "App\\": "app/",
       "Routes\\": "routes/"
     }
+  },
+  "require": {
+    "ext-pdo": "*"
   }
 }
