@@ -12,6 +12,7 @@ use App\Core\Http\Route;
  */
 $request = Request::getRequest();
 Response::getResponse();
+DB::init();
 
 /**
  * load routes

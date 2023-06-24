@@ -1,10 +1,10 @@
 <?php
 namespace App\Controller;
-use App\Core\Response;
+use app\Core\Http\Response;
 
 class IndexController extends BaseController
 {
-    public function index(): \App\Core\Response
+    public function index(): \app\Core\Http\Response
     {
         return Response::getResponse()->status(200)
             ->message('Index')

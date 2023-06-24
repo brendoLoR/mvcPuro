@@ -2,8 +2,8 @@
 
 namespace App\Middleware;
 
-use App\Core\Request;
-use App\Core\Response;
+use app\Core\Http\Request;
+use app\Core\Http\Response;
 
 class AuthUserMiddleware extends BaseMiddleware
 {
