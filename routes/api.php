@@ -15,6 +15,11 @@ $routes = [
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
+        'route' => '/^user$/',
+        'method' => 'POST',
+        'action' => [UserController::class, 'create'],
+    ],
+    [
         'route' => '/^index$/',
         'method' => 'GET',
         'action' => [IndexController::class, 'index'],
