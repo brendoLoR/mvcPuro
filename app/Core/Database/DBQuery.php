@@ -48,12 +48,12 @@ class DBQuery
         return ($this->getExecutor())();
     }
 
-    public function insert(array $fields): static
+    public function insert(array $fields): mixed
     {
         $this->type = 'insert';
         $this->fields = $fields;
 
-        return $this;
+        return ($this->getExecutor())();
     }
 
     public function update(array $fields): static
@@ -111,6 +111,7 @@ class DBQuery
     {
         return match ($this->type) {
             'select' => $this->getSelectQuery(),
+            'insert' => $this->getInsertQuery(),
         };
     }
 
@@ -119,8 +120,10 @@ class DBQuery
         $db = DB::init();
         return match ($this->type) {
             'select' => function () use ($db) {
-                $query = $this->getSelectQuery();
-                return $db->execute($query, $this->getConditionsValues(), true);
+                return $db->execute($this->getSelectQuery(), $this->getConditionsValues(), true);
+            },
+            'insert' => function () use ($db) {
+                return $db->execute($this->getInsertQuery(), array_values($this->fields));
             }
         };
     }
@@ -159,10 +162,22 @@ class DBQuery
             $base .= "ORDER $orderBy";
         }
 
-        if(isset($this->limit) && $this->limit > 0){
+        if (isset($this->limit) && $this->limit > 0) {
             $base .= " LIMIT $this->limit";
         }
+
         return $base;
+    }
+
+    /**
+     * @return string
+     */
+    private function getInsertQuery(): string
+    {
+        return sprintf(/** @lang text */ "INSERT INTO %s (%s) VALUES (%s)",
+            $this->tableName,
+            implode(',', array_keys($this->fields)),
+            substr(str_repeat(',?', sizeof($this->fields)), 1));
     }
 
     /**
@@ -180,4 +195,5 @@ class DBQuery
 
         return true;
     }
+
 }
