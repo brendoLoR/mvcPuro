@@ -3,6 +3,8 @@
 namespace App\Core\Http;
 
 use App\Core\Database\DBQuery;
+use App\Model\User;
+use Exception;
 
 /**
  * core general propose Request class
@@ -16,6 +18,7 @@ final class Request
     public array|bool $headers;
     public string|bool $authorizarion;
     public array $errors = [];
+    private User $user;
 
     private function __construct()
     {
@@ -65,7 +68,7 @@ final class Request
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function validate(array $rules): bool|array
     {
@@ -79,7 +82,7 @@ final class Request
             foreach ($rules as $rule) {
                 $rule = explode(":", $rule);
                 if (!isset($validations[$rule[0]])) {
-                    throw new \Exception("validation mismatch");
+                    throw new Exception("validation mismatch");
                 }
 
                 if (!$validations[$rule[0]]($this->body, $value, $rule[1] ?? null)) {
@@ -116,5 +119,15 @@ final class Request
             'unique' => fn($attribute) => "$attribute must be unique",
             'exists' => fn($attribute) => "$attribute must exists",
         ];
+    }
+
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function user(): User|bool
+    {
+        return $this->user ?? false;
     }
 }

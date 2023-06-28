@@ -34,9 +34,13 @@ class User extends Model
             return false;
         }
 
-        return (new static())->query()
+        if(!$data = (new static())->query()
             ->where('token', '=', $token)
-            ->first();
+            ->first()){
+            return false;
+        }
+
+        return new static($data);
     }
 
     protected static function beforeSave(Model $model): Model

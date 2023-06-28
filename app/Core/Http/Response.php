@@ -54,7 +54,7 @@ class Response
     /**
      * @throws \Exception
      */
-    public function send(string $message = null, array $body = null, int $status = null, bool $noBody = false): void
+    public function send(string $message = null, array $body = null, int $status = 200, bool $noBody = false): void
     {
         if (!is_null($message)) {
             $this->message($message);
@@ -76,7 +76,7 @@ class Response
         $response = json_encode([
             'status' => $this->statusCode,
             'message' => $this->message,
-            'body' => $this->jsonBody,
+            'data' => $this->jsonBody,
         ]);
 
         if (json_last_error() != JSON_ERROR_NONE) {

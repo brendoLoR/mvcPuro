@@ -10,7 +10,8 @@ class AuthUserMiddleware extends BaseMiddleware
 {
     public function __invoke(Request $request): bool
     {
-        if($request->authorizarion !== false && User::checkToken($request->authorizarion)){
+        if($request->authorizarion !== false && $user = User::checkToken($request->authorizarion)){
+            Request::getRequest()->setUser($user);
             return true;
         }
 

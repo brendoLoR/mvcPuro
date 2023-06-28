@@ -20,6 +20,7 @@ class UserController extends BaseController
 
     public function show($user_id): Response
     {
+        
         return $this->response()->status(200)
             ->message('Index')
             ->json([
