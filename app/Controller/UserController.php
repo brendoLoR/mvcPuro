@@ -5,49 +5,61 @@ namespace App\Controller;
 use App\Core\Database\DBQuery;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
+use App\Model\User;
 
 class UserController extends BaseController
 {
-    public function index($user_id): Response
+    public function index(): Response
     {
-        return Response::getResponse()->status(200)
+        return $this->response()->status(200)
             ->message('Index')
             ->json([
-                'user' => DBQuery::table('users')
-                    ->select(['name', 'email'])
-                    ->where('id', '=', "$user_id")
-                    ->first(),
+                'user' => User::all(),
             ]);
     }
 
+    public function show($user_id): Response
+    {
+        return $this->response()->status(200)
+            ->message('Index')
+            ->json([
+                'user' => User::find($user_id)->attributes,
+            ]);
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function create(): Response
     {
         $request = Request::getRequest();
-        if (!$validated = $request
-            ->validate([
+        if (!$validated = $request->validate([
                 'name' => 'required',
-                'email' => ['required', 'unique:users'],
+                'email' => ['required', 'email', 'unique:users',],
                 'password' => 'required',
             ])) {
-            return Response::getResponse()->status(400)
-                ->message("Request error")
-                ->json($request->getErrorsMessages());
+            return $this->response()->status(400)->message("Request error")->json($request->getErrorsMessages());
         }
 
-        if (!($user = DBQuery::table('users')
-            ->insert($validated))) {
-            return Response::getResponse()->status(501)
-                ->message("Error on server")
-                ->json([
-                    'status' => 501
-                ]);
-        }
-        return Response::getResponse()->status(200)
-            ->message("User created")
-            ->json([
-                'userId' => $user['id'] ?? '',
+        if (!($user = (new User($validated))->save())) {
+            return $this->response()->status(501)->message("Error on server")->json([
+                'status' => 501
             ]);
+        }
 
+        return $this->response()->status(200)->message("User created")->json([
+            'userId' => $user->getAttribute('id') ?? '',
+        ]);
+    }
+
+
+    public function delete($user_id): Response
+    {
+        return $this->response()->status(200)
+            ->message('Index')
+            ->json([
+                'deleted' => (new User())->delete($user_id),
+            ]);
     }
 
 }

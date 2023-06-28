@@ -3,15 +3,27 @@
 namespace Routes;
 
 use App\Controller\IndexController;
+use App\Controller\LoginController;
 use App\Controller\UserController;
 use App\Middleware\AuthUserMiddleware;
 
 $routes = [
     [
-        'route' => '/^user\/(?P<user_id>\d+)$/',
-        'parameters' => ['user_id',],
+        'route' => '/^login$/',
+        'method' => 'POST',
+        'action' => [LoginController::class, 'login'],
+    ],
+    [
+        'route' => '/^user$/',
         'method' => 'GET',
         'action' => [UserController::class, 'index'],
+        'middlewares' => [AuthUserMiddleware::class,]
+    ],
+    [
+        'route' => '/^user\/(?P<user_id>\d+)$/',
+        'parameters' => ['user_id',],
+        'method' => 'DELETE',
+        'action' => [UserController::class, 'delete'],
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [

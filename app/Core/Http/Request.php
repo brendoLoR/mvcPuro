@@ -13,6 +13,8 @@ final class Request
     public string $uri;
     public string $method;
     public mixed $body;
+    public array|bool $headers;
+    public string|bool $authorizarion;
     public array $errors = [];
 
     private function __construct()
@@ -20,7 +22,11 @@ final class Request
         $this->uri = $_SERVER['REQUEST_URI'];
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->body = $this->getRequestData();
+        $this->headers = getallheaders();
 
+        $this->authorizarion = isset($this->headers['Authorization']) ?
+            str_replace('Bearer ', '', $this->headers['Authorization']) :
+            false;
     }
 
     /**
@@ -48,6 +54,14 @@ final class Request
         }
 
         return [];
+    }
+
+    private static function exists($field, mixed $value, $table)
+    {
+        return DBQuery::table($table)
+            ->select()
+            ->where($field, '=', $value)
+            ->first();
     }
 
     /**
@@ -88,10 +102,9 @@ final class Request
     {
         return [
             'required' => fn($requestBody, $nedded, $attr = null) => isset($requestBody[$nedded]),
-            'unique' => fn($requestBody, $nedded, $attr) => is_null(DBQuery::table($attr)
-                ->select()
-                ->where($nedded, '=', $requestBody[$nedded])
-                ->first()),
+            'email' => fn($requestBody, $nedded, $attr = null) => filter_var($requestBody[$nedded], FILTER_VALIDATE_EMAIL),
+            'unique' => fn($requestBody, $nedded, $attr) => (self::exists($nedded, $requestBody[$nedded], $attr)) == false,
+            'exists' => fn($requestBody, $nedded, $attr) => (self::exists($nedded, $requestBody[$nedded], $attr)) != false,
         ];
     }
 
@@ -99,7 +112,9 @@ final class Request
     {
         return [
             'required' => fn($attribute) => "$attribute is required",
+            'email' => fn($attribute) => "$attribute must be valid email",
             'unique' => fn($attribute) => "$attribute must be unique",
+            'exists' => fn($attribute) => "$attribute must exists",
         ];
     }
 }

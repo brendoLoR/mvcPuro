@@ -56,12 +56,18 @@ class DBQuery
         return ($this->getExecutor())();
     }
 
-    public function update(array $fields): static
+    public function update(array $fields): mixed
     {
         $this->type = 'update';
         $this->fields = $fields;
 
-        return $this;
+        return ($this->getExecutor())();
+    }
+    public function delete($idName, $id): mixed
+    {
+        $this->type = 'delete';
+
+        return ($this->where($idName, '=', $id)->getExecutor())();
     }
 
     public function select(array $fields = ['*']): static
@@ -112,6 +118,8 @@ class DBQuery
         return match ($this->type) {
             'select' => $this->getSelectQuery(),
             'insert' => $this->getInsertQuery(),
+            'updata' => $this->getUpdateQuery(),
+            'delete' => $this->getDeleteQuery(),
         };
     }
 
@@ -123,8 +131,14 @@ class DBQuery
                 return $db->execute($this->getSelectQuery(), $this->getConditionsValues(), true);
             },
             'insert' => function () use ($db) {
-                return $db->execute($this->getInsertQuery(), array_values($this->fields));
-            }
+                return $db->execute($this->getInsertQuery(), array_values($this->fields), returnId: true);
+            },
+            'update' => function () use ($db) {
+                return $db->execute($this->getUpdateQuery(), [...array_values($this->fields), ...$this->getConditionsValues()]);
+            },
+            'delete' => function () use ($db) {
+                return $db->execute($this->getDeleteQuery(), $this->getConditionsValues());
+            },
         };
     }
 
@@ -138,7 +152,7 @@ class DBQuery
     private function getConditionsQuery(): string
     {
         return array_reduce($this->conditions, function ($query, $condition) {
-            return sprintf("%s %s %s ?",
+            return $query . sprintf(" %s %s %s ?",
                 empty($query) ? "" : $condition['boolean'],
                 $condition['field'],
                 $condition['operation']);
@@ -194,6 +208,21 @@ class DBQuery
         }
 
         return true;
+    }
+
+    private function getUpdateQuery(): string
+    {
+        return sprintf(/** @lang text */ "UPDATE %s SET %s WHERE (%s)",
+            $this->tableName,
+            implode(' = ?,', array_keys($this->fields)) . ' = ?',
+            $this->getConditionsQuery());
+    }
+
+    private function getDeleteQuery(): string
+    {
+        return sprintf(/** @lang text */ "DELETE FROM %s WHERE (%s)",
+            $this->tableName,
+            $this->getConditionsQuery());
     }
 
 }

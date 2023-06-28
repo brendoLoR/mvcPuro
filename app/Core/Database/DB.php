@@ -27,8 +27,8 @@ class DB
     }
 
     /**
-     * @throws PDOException
      * @return bool|$this
+     * @throws PDOException
      */
     private function connect(): static|bool
     {
@@ -43,28 +43,32 @@ class DB
         return $this;
     }
 
-    public function execute(string $query, array $values, bool $fatch = false): bool|array
+    public function execute(string $query, array $values, bool $fatch = false, bool $returnId = false): string|bool|array
     {
         try {
             $this->connect();
             $this->PDO->beginTransaction();
 
             $sth = $this->PDO->prepare($query);
-            if(!$sth->execute($values)){
+            if (!$sth->execute($values)) {
                 $this->PDO->rollBack();
                 return false;
             }
 
             $result = true;
-            if($fatch){
-                $result = $sth->fetchAll();
+            if ($fatch) {
+                $result = $sth->fetchAll($this->PDO::FETCH_ASSOC);
+            }
+            if ($returnId) {
+                $result = $this->PDO->lastInsertId();
             }
 
             $this->PDO->commit();
 
             return $result;
-        }catch (PDOException $e){
-            throw new \Exception("Erro ao executar: {$e->getMessage()}" . $e->getTraceAsString());
+        } catch (PDOException $e) {
+            $this->PDO->rollBack();
+            throw new \Exception("Erro ao executar: {$query} {$e->getMessage()} {$e->getTraceAsString()}" );
         }
     }
 
