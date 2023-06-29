@@ -47,24 +47,27 @@ final class Request
 
     private function getRequestData(): mixed
     {
-        if (!empty($_POST)) {
-            return $_POST;
-        }
+        $method = $_SERVER['REQUEST_METHOD'];
 
-        $post = json_decode(file_get_contents('php://input'), true);
-        if (json_last_error() == JSON_ERROR_NONE) {
-            return $post;
-        }
+        return match ($method) {
+            'GET' => $_GET,
+            'POST' => $_POST,
+            'PUT' => $this->getPut(),
+            default => []
+        };
 
-        return [];
     }
 
     private static function exists($field, mixed $value, $table)
     {
-        return DBQuery::table($table)
+        $table = explode(',', $table);
+        $query = DBQuery::table($table[0])
             ->select()
-            ->where($field, '=', $value)
-            ->first();
+            ->where($field, '=', $value);
+        if (isset($table[1])) {
+            $query->where('id', '<>', $table[1]);
+        }
+        return $query->first();
     }
 
     /**
@@ -105,6 +108,9 @@ final class Request
     {
         return [
             'required' => fn($requestBody, $nedded, $attr = null) => isset($requestBody[$nedded]),
+
+            'nullable' => fn($requestBody, $nedded, $attr = null) => true,
+            'equals' => fn($requestBody, $nedded, $attr = null) => $requestBody[$nedded] == $attr,
             'email' => fn($requestBody, $nedded, $attr = null) => filter_var($requestBody[$nedded], FILTER_VALIDATE_EMAIL),
             'unique' => fn($requestBody, $nedded, $attr) => (self::exists($nedded, $requestBody[$nedded], $attr)) == false,
             'exists' => fn($requestBody, $nedded, $attr) => (self::exists($nedded, $requestBody[$nedded], $attr)) != false,
@@ -129,5 +135,19 @@ final class Request
     public function user(): User|bool
     {
         return $this->user ?? false;
+    }
+
+    /**
+     * @return array
+     */
+    private function getPut(): array
+    {
+        parse_str(file_get_contents("php://input"), $putData);
+        foreach ($putData as $key => $value) {
+            unset($putData[$key]);
+            $putData[str_replace('amp;', '', $key)] = $value;
+        }
+
+        return $putData;
     }
 }
