@@ -22,6 +22,20 @@ $routes = [
     [
         'route' => '/^user\/(?P<user_id>\d+)$/',
         'parameters' => ['user_id',],
+        'method' => 'GET',
+        'action' => [UserController::class, 'show'],
+        'middlewares' => [AuthUserMiddleware::class,]
+    ],
+    [
+        'route' => '/^user\/(?P<user_id>\d+)$/',
+        'parameters' => ['user_id',],
+        'method' => 'PUT',
+        'action' => [UserController::class, 'update'],
+        'middlewares' => [AuthUserMiddleware::class,]
+    ],
+    [
+        'route' => '/^user\/(?P<user_id>\d+)$/',
+        'parameters' => ['user_id',],
         'method' => 'DELETE',
         'action' => [UserController::class, 'delete'],
         'middlewares' => [AuthUserMiddleware::class,]
