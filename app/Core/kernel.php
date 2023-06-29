@@ -10,9 +10,9 @@ use App\Core\Http\Route;
 /**
  * initialize Request and Response
  */
+DB::init();
 $request = Request::getRequest();
 Response::getResponse();
-DB::init();
 
 /**
  * load routes

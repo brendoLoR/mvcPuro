@@ -28,10 +28,10 @@ class DBQuery
         return new self($table);
     }
 
-    public function first()
+    public function first(array $fields = ['*'])
     {
         if (!$this->valideteSelect()) {
-            return false;
+            $this->select($fields);
         }
 
         $this->limit = 1;

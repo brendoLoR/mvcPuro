@@ -66,7 +66,7 @@ class DB
             $this->PDO->commit();
 
             return $result;
-        } catch (PDOException $e) {
+        } catch (\Exception $e) {
             $this->PDO->rollBack();
             throw new \Exception("Erro ao executar: {$query} {$e->getMessage()} {$e->getTraceAsString()}" );
         }

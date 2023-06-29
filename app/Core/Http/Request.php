@@ -108,7 +108,6 @@ final class Request
     {
         return [
             'required' => fn($requestBody, $nedded, $attr = null) => isset($requestBody[$nedded]),
-
             'nullable' => fn($requestBody, $nedded, $attr = null) => true,
             'equals' => fn($requestBody, $nedded, $attr = null) => $requestBody[$nedded] == $attr,
             'email' => fn($requestBody, $nedded, $attr = null) => filter_var($requestBody[$nedded], FILTER_VALIDATE_EMAIL),
