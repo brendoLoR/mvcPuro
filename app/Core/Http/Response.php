@@ -54,7 +54,7 @@ class Response
     /**
      * @throws \Exception
      */
-    public function send(string $message = null, array $body = null, int $status = 200, bool $noBody = false): void
+    public function send(string $message = null, array $body = null, int $status = null, bool $noBody = false): void
     {
         if (!is_null($message)) {
             $this->message($message);
@@ -66,7 +66,7 @@ class Response
             $this->status($status);
         }
 
-        http_response_code($status);
+        http_response_code($this->statusCode);
 
         if ($noBody) {
             echo '';
