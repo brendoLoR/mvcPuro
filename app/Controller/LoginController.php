@@ -14,14 +14,14 @@ class LoginController extends BaseController
             'email' => ['required', 'email'],
             'password' => 'required',
         ])) {
-            return $this->response()->status(400)->message("Request error")->json($request->getErrorsMessages());
+            return $this->abort(400, "Request error");
         }
 
         if(!$loggedUser = User::attemptLogin($validated['email'], $validated['password'])){
-            return $this->response()->status(403)->message("Email or password invalid")->json([]);
+            return $this->abort(403, "user does not exist or that the password is invalid");
         }
 
-        return $this->response()->status(200)->message("logged in")->json(['user' => $loggedUser]);
+        return $this->response()->status(200)->message("logged in")->json(['token' => $loggedUser]);
 
     }
 }
