@@ -24,9 +24,22 @@ class Model
         return $this->table;
     }
 
+    /**
+     * @param string $column
+     */
+    public static function addHidden(string $column): void
+    {
+        self::$hidden[] = $column;
+    }
+
     protected static function beforeSave(Model $model): Model
     {
         return $model;
+    }
+
+    protected static function beforeUpdate(array $attributes): array
+    {
+        return $attributes;
     }
 
     protected function getIdColumn(): string
@@ -105,6 +118,14 @@ class Model
         return $model;
     }
 
+    public static function create(array $attributes): DBQuery|Model|bool
+    {
+        $model = new static();
+        $model->attributes = $attributes;
+
+        return $model->save();
+    }
+
     /**
      * @param string $attribute
      * @param mixed $value
@@ -138,8 +159,9 @@ class Model
      * @param mixed $id
      * @return Model|false
      */
-    protected function update(array $attributes): Model|false
+    public function update(array $attributes): Model|false
     {
+        $attributes = self::beforeUpdate($attributes);
         if ($this->query()->where($this->getIdColumn(), '=', $this->getAttribute($this->getIdColumn()))
             ->update($attributes)) {
             return $this;
