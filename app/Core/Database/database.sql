@@ -11,8 +11,8 @@ CREATE TABLE drinks
 (
     id         BIGINT auto_increment NOT NULL,
     user_id    BIGINT NOT NULL,
+    drink     INT       DEFAULT 1 NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
-    drinks     INT       DEFAULT 1 NOT NULL,
     CONSTRAINT drinks_pk PRIMARY KEY (id),
-    CONSTRAINT drinks_FK FOREIGN KEY (user_id) REFERENCES users (id)
+    CONSTRAINT drinks_FK FOREIGN KEY (user_id) REFERENCES users (id) on delete cascade on update cascade
 )
