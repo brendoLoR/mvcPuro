@@ -7,14 +7,14 @@ use App\Model\User;
 
 trait HasAuthentication
 {
-    public static function attemptLogin(mixed $email, mixed $password): string|bool
+    public static function attemptLogin(mixed $email, mixed $password): bool|User
     {
         $password = self::getHash($password);
 
         $user = new static();
 
         /** @var User $user */
-        if (!$userData = $user->query()
+        if (!$userData = $user
             ->where('email', '=', $email)
             ->where('password', '=', $password)
             ->first()) {
@@ -23,7 +23,7 @@ trait HasAuthentication
 
         $user = new User($userData);
         $token = self::getHash($user->getAttribute('email') . microtime());
-        return $user->update(['token' => $token]) ? $token : false;
+        return $user->update(['token' => $token]) ? $user->setAttribute('token' , $token) : false;
 
     }
 
@@ -33,7 +33,7 @@ trait HasAuthentication
             return false;
         }
 
-        if (!$data = (new static())->query()
+        if (!$data = (new static())
             ->where('token', '=', $token)
             ->first()) {
             return false;
