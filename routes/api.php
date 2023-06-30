@@ -5,6 +5,7 @@ namespace Routes;
 use App\Controller\IndexController;
 use App\Controller\LoginController;
 use App\Controller\UserController;
+use App\Controller\UserDrinkController;
 use App\Middleware\AuthUserMiddleware;
 
 $routes = [
@@ -38,6 +39,13 @@ $routes = [
         'parameters' => ['user_id',],
         'method' => 'DELETE',
         'action' => [UserController::class, 'delete'],
+        'middlewares' => [AuthUserMiddleware::class,]
+    ],
+    [
+        'route' => '/^user\/(?P<user_id>\d+)\/drink$/',
+        'parameters' => ['user_id',],
+        'method' => 'POST',
+        'action' => [UserDrinkController::class, 'drink'],
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
