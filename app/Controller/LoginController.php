@@ -21,7 +21,7 @@ class LoginController extends BaseController
             return $this->abort(403, "user does not exist or that the password is invalid");
         }
 
-        return $this->response()->status(200)->message("logged in")->json(['token' => $loggedUser]);
+        return $this->response()->status(200)->message("logged in")->json(['user' => $loggedUser->attributes]);
 
     }
 }
