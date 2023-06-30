@@ -4,11 +4,10 @@ namespace App\Model;
 
 use App\Core\Database\DBQuery;
 
-class Model
+class Model extends DBQuery
 {
     protected string $table;
     protected string $idColumn = 'id';
-    protected DBQuery $query;
 
     protected static array $hidden = [];
 
@@ -16,6 +15,7 @@ class Model
         public ?array $attributes = null,
     )
     {
+        parent::__construct($this->getTableName());
         $this->filterHiddens();
     }
 
@@ -37,6 +37,11 @@ class Model
         return $model;
     }
 
+    protected static function afterFind(Model $model): Model
+    {
+        return $model;
+    }
+
     protected static function beforeUpdate(array $attributes): array
     {
         return $attributes;
@@ -47,50 +52,54 @@ class Model
         return $this->idColumn;
     }
 
-    public function query(): DBQuery
-    {
-        if (!isset($this->query)) {
-            $this->query = DBQuery::table($this->getTableName());
-        }
-
-        return $this->query;
-    }
-
     public static function find($id, $attributes = ['*'], bool $filter = true): Model|false
     {
         $model = new static();
-        if (!$finded = $model->query()
+
+        if ($countingQuery = $model->getWithCountQuery()) {
+            $attributes[] = $countingQuery;
+        }
+
+        if (!$finded = $model
             ->select($attributes)
             ->where('id', '=', "$id")
             ->first()) {
             return false;
         }
+
         $model->attributes = $finded;
-        if ($filter){
+
+        if ($filter) {
             $model->filterHiddens();
         }
 
-        return $model;
+        return static::afterFind($model);
     }
 
     public static function all($attributes = ['*'])
     {
-        $finded = (new static())->query()->select($attributes)->get();
+        $model = new static();
 
-        return array_map(function ($model){
+        if ($countingQuery = $model->getWithCountQuery()) {
+            $attributes[] = $countingQuery;
+        }
+
+        $finded = $model->select($attributes)->get();
+
+        return array_map(function ($model) {
             $model = new static($model);
             $model->filterHiddens();
-            return $model;
+            return static::afterFind($model);
         }, $finded);
     }
 
-    public function delete($id = null): DBQuery|bool
+    public function delete($id = null, $idName = null): DBQuery|bool
     {
         if ($id) {
-            return $this->query()->delete($this->getIdColumn(), $id);
+            return $this->deleteQuery($id, $this->getIdColumn());
         }
         if ($id = $this->getAttribute($this->getIdColumn())) {
-            return $this->query()->delete($this->getIdColumn(), $id);
+            return $this->deleteQuery($id, $this->getIdColumn());
         }
         return false;
     }
@@ -103,7 +112,7 @@ class Model
 
         $model = static::beforeSave($this);
 
-        $query = $this->query();
+        $query = $this;
 
         if ($id = $model->getAttribute($model->getIdColumn())) {
             return $model->update($this->attributes);
@@ -162,11 +171,16 @@ class Model
     public function update(array $attributes): Model|false
     {
         $attributes = self::beforeUpdate($attributes);
-        if ($this->query()->where($this->getIdColumn(), '=', $this->getAttribute($this->getIdColumn()))
-            ->update($attributes)) {
+        if (parent::where($this->getIdColumn(), '=', $this->getAttribute($this->getIdColumn()))
+            ->updateQuery($attributes)) {
             return $this;
         }
         return false;
+    }
+
+    protected function getWithCountQuery(): null|string
+    {
+        return null;
     }
 
 

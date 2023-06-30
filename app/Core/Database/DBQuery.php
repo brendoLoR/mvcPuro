@@ -18,7 +18,7 @@ class DBQuery
     protected int $limit;
 
 
-    private function __construct(string $tableName)
+    protected function __construct(string $tableName)
     {
         $this->tableName = $tableName;
     }
@@ -48,6 +48,14 @@ class DBQuery
         return ($this->getExecutor())();
     }
 
+    public function sum(string $field, string $groupColumn): mixed
+    {
+        $this->type = 'select';
+        $this->fields = ["sum($field) as {$field}_sum"];
+        $this->group([$groupColumn]);
+
+        return ($result = ($this->getExecutor())()) ? $result[0] : 0;
+    }
     public function insert(array $fields): mixed
     {
         $this->type = 'insert';
@@ -56,14 +64,14 @@ class DBQuery
         return ($this->getExecutor())();
     }
 
-    public function update(array $fields): mixed
+    public function updateQuery(array $fields): mixed
     {
         $this->type = 'update';
         $this->fields = $fields;
 
         return ($this->getExecutor())();
     }
-    public function delete($idName, $id): mixed
+    public function deleteQuery($id, $idName = 'id'): mixed
     {
         $this->type = 'delete';
 
@@ -113,13 +121,13 @@ class DBQuery
         return $this;
     }
 
-    public function query(): string
+    public function query(bool $valueted = false): string
     {
         return match ($this->type) {
-            'select' => $this->getSelectQuery(),
-            'insert' => $this->getInsertQuery(),
-            'updata' => $this->getUpdateQuery(),
-            'delete' => $this->getDeleteQuery(),
+            'select' => $this->getSelectQuery($valueted),
+            'insert' => $this->getInsertQuery($valueted),
+            'updata' => $this->getUpdateQuery($valueted),
+            'delete' => $this->getDeleteQuery($valueted),
         };
     }
 
@@ -162,7 +170,7 @@ class DBQuery
     /**
      * @return string
      */
-    private function getSelectQuery(): string
+    private function getSelectQuery(bool $valueted = false): string
     {
         $base = sprintf(/** @lang text */ "SELECT %s FROM %s WHERE %s",
             implode(',', $this->fields), $this->tableName, $this->getConditionsQuery());
@@ -180,13 +188,16 @@ class DBQuery
             $base .= " LIMIT $this->limit";
         }
 
+        if($valueted){
+            $base = $this->mergeQueryValues($base, $this->getConditionsValues());
+        }
         return $base;
     }
 
     /**
      * @return string
      */
-    private function getInsertQuery(): string
+    private function getInsertQuery(bool $valueted = false): string
     {
         return sprintf(/** @lang text */ "INSERT INTO %s (%s) VALUES (%s)",
             $this->tableName,
@@ -210,7 +221,7 @@ class DBQuery
         return true;
     }
 
-    private function getUpdateQuery(): string
+    private function getUpdateQuery(bool $valueted = false): string
     {
         return sprintf(/** @lang text */ "UPDATE %s SET %s WHERE (%s)",
             $this->tableName,
@@ -218,11 +229,19 @@ class DBQuery
             $this->getConditionsQuery());
     }
 
-    private function getDeleteQuery(): string
+    private function getDeleteQuery(bool $valueted = false): string
     {
         return sprintf(/** @lang text */ "DELETE FROM %s WHERE (%s)",
             $this->tableName,
             $this->getConditionsQuery());
+    }
+
+    private function mergeQueryValues(string $query, array $values): string
+    {
+        while (($pos = strpos($query, '?')) && !empty($values)){
+            $query = substr_replace($query, array_shift($values), $pos);
+        }
+        return $query;
     }
 
 }
