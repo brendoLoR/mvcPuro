@@ -111,6 +111,7 @@ final class Request
             'nullable' => fn($requestBody, $nedded, $attr = null) => true,
             'equals' => fn($requestBody, $nedded, $attr = null) => $requestBody[$nedded] == $attr,
             'email' => fn($requestBody, $nedded, $attr = null) => filter_var($requestBody[$nedded], FILTER_VALIDATE_EMAIL),
+            'instanceOf' => fn($requestBody, $nedded, $attr = null) => filter_var($requestBody[$nedded], intval($attr)),
             'unique' => fn($requestBody, $nedded, $attr) => (self::exists($nedded, $requestBody[$nedded], $attr)) == false,
             'exists' => fn($requestBody, $nedded, $attr) => (self::exists($nedded, $requestBody[$nedded], $attr)) != false,
         ];
@@ -120,6 +121,7 @@ final class Request
     {
         return [
             'required' => fn($attribute) => "$attribute is required",
+            'instanceOf' => fn($attribute) => "$attribute is invalid",
             'email' => fn($attribute) => "$attribute must be valid email",
             'unique' => fn($attribute) => "$attribute must be unique",
             'exists' => fn($attribute) => "$attribute must exists",
