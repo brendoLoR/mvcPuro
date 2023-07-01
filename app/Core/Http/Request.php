@@ -54,8 +54,7 @@ final class Request
 
         return match ($method) {
             'GET' => $_GET,
-            'POST' => $_POST,
-            'PUT' => $this->getPut(),
+            'POST', 'PUT' => $this->getFormData(),
             default => []
         };
 
@@ -149,15 +148,12 @@ final class Request
     /**
      * @return array
      */
-    private function getPut(): array
+    private function getFormData(): array|string
     {
-        parse_str(file_get_contents("php://input"), $putData);
-        foreach ($putData as $key => $value) {
-            unset($putData[$key]);
-            $putData[str_replace('amp;', '', $key)] = $value;
-        }
+        $putData = file_get_contents("php://input");
+        $putData = json_decode($putData, flags: JSON_OBJECT_AS_ARRAY);
 
-        return $putData;
+        return $this->removeAmpString($putData);
     }
 
     /**
@@ -168,5 +164,19 @@ final class Request
         $urlQuery = $params ? http_build_query($params) : '';
 
         return $this->uri . '?' . $urlQuery;
+    }
+
+    /**
+     * @param mixed $putData
+     * @return mixed
+     */
+    private function removeAmpString(mixed $putData): mixed
+    {
+        foreach ($putData as $key => $value) {
+            unset($putData[$key]);
+            $putData[str_replace('amp;', '', $key)] = $value;
+        }
+
+        return $putData;
     }
 }
