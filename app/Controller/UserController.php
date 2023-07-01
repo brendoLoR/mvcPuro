@@ -11,7 +11,7 @@ class UserController extends BaseController
     public function index(): Response
     {
         return $this->response()->status(200)
-            ->message('Index')
+            ->message('List of users')
             ->json([
                 'user' => User::paginate(),
             ]);
@@ -21,7 +21,7 @@ class UserController extends BaseController
     {
 
         return $this->response()->status(200)
-            ->message('Index')
+            ->message('User ' . $user_id)
             ->json([
                 'user' => User::find($user_id)->attributes,
             ]);

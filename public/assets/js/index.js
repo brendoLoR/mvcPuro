@@ -18,6 +18,8 @@ function submitFormLogin() {
             document.getElementById('edit-name').value = data.data.user.name
             document.getElementById('edit-email').value = data.data.user.email
             loginContainer.className = loginContainer.className + ' d-none';
+            document.getElementById('edit-user-container').className = '';
+            document.getElementById('input-output-container').className = '';
         });
 }
 
@@ -128,7 +130,11 @@ function postData(route, data = {}, message = '', callback = function (data) {
         .then((response) => response.json())
         .then((data) => {
             if (data.status !== 200) {
-                alert('Error: ' + data.message)
+                if (data.data.errors) {
+                    alert(JSON.stringify(data.data.errors))
+                } else {
+                    alert('Error: ' + data.message)
+                }
                 return;
             }
             console.log("Success:", data);

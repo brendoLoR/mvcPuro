@@ -130,7 +130,7 @@ final class Request
             'required' => fn($attribute) => "$attribute is required",
             'instanceOf' => fn($attribute) => "$attribute is invalid",
             'email' => fn($attribute) => "$attribute must be valid email",
-            'unique' => fn($attribute) => "$attribute must be unique",
+            'unique' => fn($attribute) => "$attribute already exists",
             'exists' => fn($attribute) => "$attribute must exists",
         ];
     }
