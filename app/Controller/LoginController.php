@@ -9,8 +9,7 @@ class LoginController extends BaseController
 {
     public function login()
     {
-        $request = Request::getRequest();
-        if (!$validated = $request->validate([
+        if (!$validated = $this->request()->validate([
             'email' => ['required', 'email'],
             'password' => 'required',
         ])) {
