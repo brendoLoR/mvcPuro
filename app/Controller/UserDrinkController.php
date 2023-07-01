@@ -3,13 +3,22 @@
 namespace App\Controller;
 
 use App\Core\Http\Response;
-use App\Model\Drink;
 use App\Model\User;
 use App\Services\RankingService;
+use App\Services\UserDrinkService;
 use DateTime;
 
 class UserDrinkController extends BaseController
 {
+    protected UserDrinkService $drinkService;
+    protected RankingService $rankingService;
+    public function __construct()
+    {
+        $this->drinkService = new UserDrinkService();
+
+        $this->rankingService = new RankingService();
+    }
+
     /**
      * @throws \Exception
      */
@@ -25,16 +34,15 @@ class UserDrinkController extends BaseController
             return $this->abort(400, "Request error");
         }
 
-        if (!Drink::create([
-            'user_id' => $user_id,
-            ...$validated
-        ])) {
+        if (($this->drinkService)($user_id, $validated)) {
+
             return $this->abort(501, "Error on server");
         }
 
         return $this->response()->status(200)->message("Drink registreded")->json([
             'user' => User::find($user_id)->attributes,
         ]);
+
     }
 
 
@@ -44,9 +52,7 @@ class UserDrinkController extends BaseController
             return $this->abort();
         }
 
-        if (!$drinkHistory = $user->drinks()
-            ->select(["DISTINCT DATE(created_at) as `date`", "SUM(drink) as drink_sum", "COUNT(id) as register_count"])
-            ->group(["`date`"])->get()) {
+        if (!$drinkHistory = $this->drinkService->history($user)) {
 
             return $this->response()->message("Historic not found")
                 ->status(404)->json([]);
@@ -62,7 +68,7 @@ class UserDrinkController extends BaseController
             return $this->abort(400, "Invalid date format, expected: Y-m-d, redived: {$date->format('Y-m-d')}");
         }
 
-        if (!$ranking = (new RankingService())((clone $date)->add(new \DateInterval('PT24H')), $date)) {
+        if (!$ranking = ($this->rankingService)((clone $date)->add(new \DateInterval('PT24H')), $date)) {
             return $this->response()->message("Ranking not found")
                 ->status(404)->json([]);
         }
@@ -78,7 +84,7 @@ class UserDrinkController extends BaseController
             return $this->abort(400, "Invalid date format, expected: Y-m-d, redived: {$date->format('Y-m-d')}");
         }
 
-        if (!$ranking = (new RankingService())($date, interval: $days)) {
+        if (!$ranking = ($this->rankingService)($date, interval: $days)) {
             return $this->response()->message("Ranking not found")
                 ->status(404)->json([]);
         }

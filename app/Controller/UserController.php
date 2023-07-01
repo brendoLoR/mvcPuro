@@ -54,7 +54,7 @@ class UserController extends BaseController
      */
     public function update($user_id): Response
     {
-        if ($this->request()->user()->getAttribute('id') != $user_id) {
+        if (($user = $this->request()->user())->getAttribute('id') != $user_id) {
             return $this->abort();
 
         }
@@ -64,10 +64,6 @@ class UserController extends BaseController
             'password' => ['nullable'],
         ])) {
             return $this->abort(400, "Request error");
-        }
-
-        if(!$user = User::find($user_id, filter: false)){
-            return $this->abort(404, "User not found");
         }
 
         if (!$user->update($validated)) {
