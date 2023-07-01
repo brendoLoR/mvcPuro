@@ -15,7 +15,7 @@ $routes = [
         'action' => [LoginController::class, 'login'],
     ],
     [
-        'route' => '/^user$/',
+        'route' => '/^users$/',
         'method' => 'GET',
         'action' => [UserController::class, 'index'],
         'middlewares' => [AuthUserMiddleware::class,]
@@ -70,7 +70,7 @@ $routes = [
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
-        'route' => '/^user$/',
+        'route' => '/^users$/',
         'method' => 'POST',
         'action' => [UserController::class, 'create'],
     ],
