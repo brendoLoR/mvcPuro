@@ -227,6 +227,7 @@ class Model extends DBQuery
 
         return [
             'itens' => $itens,
+            'perPage' => $perPage,
             'currentPage' => $page,
             'numPages' => $numPages,
             'nextPage' => $nextPage,
