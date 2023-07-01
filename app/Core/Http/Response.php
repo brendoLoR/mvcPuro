@@ -11,6 +11,7 @@ class Response
     public array $jsonBody = [];
 
     public string $message = '';
+    private string|false $view = false;
 
     private function __construct()
     {
@@ -33,7 +34,7 @@ class Response
     public function status(int $status): static
     {
         $this->statusCode = $status;
-
+        http_response_code($status);
         return $this;
     }
 
@@ -56,6 +57,11 @@ class Response
      */
     public function send(string $message = null, array $body = null, int $status = null, bool $noBody = false): void
     {
+        if ($this->view){
+            echo $this->view;
+            exit();
+        }
+
         if (!is_null($message)) {
             $this->message($message);
         }
@@ -66,12 +72,6 @@ class Response
             $this->status($status);
         }
 
-        http_response_code($this->statusCode);
-
-        if ($noBody) {
-            echo '';
-            exit();
-        }
 
         $response = json_encode([
             'status' => $this->statusCode,
@@ -85,5 +85,27 @@ class Response
 
         echo $response;
         exit();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function view(string $tamplate)
+    {
+
+        if (!file_exists($file = __DIR__ . '/../../Views/' . $tamplate . '.php')) {
+            echo $this->status(500)->message('View not found')->send();
+            exit();
+        }
+
+
+        ob_start();
+        include $file;
+        $content = ob_get_contents();
+        ob_end_clean();
+        header("Content-type: text/html; charset=utf-8");
+        $this->view = $content;
+
+        return $this;
     }
 }
