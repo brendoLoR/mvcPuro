@@ -7,53 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "user     :auth (list of users)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/user",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"user"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "user/{userId}/drink     :auth (list of users) Copy",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "drink",
-							"value": "5",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{baseUrl}}/user/1/drink",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"user",
-						"1",
-						"drink"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "user/{userId}/history     :auth (user's historic)",
+			"name": "users     :auth (list of users)",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -61,22 +15,78 @@
 				"method": "GET",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "drink",
-							"value": "5",
-							"type": "text"
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/user/1/history",
+					"raw": "{{baseUrl}}/users",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/{userId}/drink     :auth (list of users) Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"drink\": 5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/{{userId}}/drink",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
+						"{{userId}}",
+						"drink"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "users/{userId}/history     :auth (user's historic)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/users/1/history",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users",
 						"1",
 						"history"
 					]
@@ -85,7 +95,7 @@
 			"response": []
 		},
 		{
-			"name": "user/ranking/{interval:int}     :auth (user ranking)",
+			"name": "users/ranking/{interval:int}     :auth (user ranking)",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -93,31 +103,30 @@
 				"method": "GET",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "drink",
-							"value": "5",
-							"type": "text"
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/user/ranking/1",
+					"raw": "{{baseUrl}}/users/ranking/5",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user",
+						"users",
 						"ranking",
-						"1"
+						"5"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "user/ranking/{year}/{month}/{day}  :auth (user ranking)",
+			"name": "users/ranking/{year}/{month}/{day}  :auth (user ranking)",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -125,22 +134,21 @@
 				"method": "GET",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "drink",
-							"value": "5",
-							"type": "text"
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/user/ranking/2023/06/30",
+					"raw": "{{baseUrl}}/users/ranking/2023/06/30",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user",
+						"users",
 						"ranking",
 						"2023",
 						"06",
@@ -151,37 +159,26 @@
 			"response": []
 		},
 		{
-			"name": "user      (create a user)",
+			"name": "users      (create a user)",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "name",
-							"value": "user",
-							"type": "text"
-						},
-						{
-							"key": "email",
-							"value": "emaiwlt@exemple.com",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"user\",\n    \"email\":\"email@email.com\",\n    \"password\":\"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/user",
+					"raw": "{{baseUrl}}/users",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user"
+						"users"
 					]
 				}
 			},
@@ -203,19 +200,13 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "email",
-							"value": "email@exemple.com",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"email@email.com\",\n    \"password\":\"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
 					"raw": "{{baseUrl}}/login",
@@ -230,7 +221,7 @@
 			"response": []
 		},
 		{
-			"name": "user/{userId}  :auth (show a user)",
+			"name": "users/{userId}  :auth (show a user)",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -248,70 +239,49 @@
 				"method": "GET",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "name",
-							"value": "user",
-							"type": "text"
-						},
-						{
-							"key": "email",
-							"value": "email@exemple.com",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/user/",
+					"raw": "{{baseUrl}}/users/1/history",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user",
-						""
+						"users",
+						"1",
+						"history"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "user/{userId}  :auth (update a user)",
+			"name": "users/{userId}  :auth (update a user)",
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "name",
-							"value": "user1",
-							"type": "text"
-						},
-						{
-							"key": "email",
-							"value": "email@exemple.com",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"user\",\n    \"email\":\"email@email.com\",\n    \"password\":\"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/user/{{userId}}",
+					"raw": "{{baseUrl}}/users/{{userId}}",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user",
+						"users",
 						"{{userId}}"
 					]
 				}
@@ -319,37 +289,26 @@
 			"response": []
 		},
 		{
-			"name": "user/{userId}  :auth (deletar a user)",
+			"name": "users/{userId}  :auth (deletar a user)",
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "name",
-							"value": "user1",
-							"type": "text"
-						},
-						{
-							"key": "email",
-							"value": "email@exemple.com",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/user/{{userId}}",
+					"raw": "{{baseUrl}}/users/{{userId}}",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"user",
+						"users",
 						"{{userId}}"
 					]
 				}
@@ -396,6 +355,11 @@
 		{
 			"key": "token",
 			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "1",
 			"type": "string"
 		}
 	]

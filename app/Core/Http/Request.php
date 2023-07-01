@@ -148,7 +148,7 @@ final class Request
     /**
      * @return array
      */
-    private function getFormData(): array|string
+    private function getFormData(): null|array|string
     {
         $putData = file_get_contents("php://input");
         $putData = json_decode($putData, flags: JSON_OBJECT_AS_ARRAY);
