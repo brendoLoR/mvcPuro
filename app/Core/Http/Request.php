@@ -13,6 +13,7 @@ final class Request
 {
     public static self $request;
     public string $uri;
+    public string|null $query;
     public string $method;
     public mixed $body;
     public array|bool $headers;
@@ -22,7 +23,9 @@ final class Request
 
     private function __construct()
     {
-        $this->uri = $_SERVER['REQUEST_URI'];
+        $url = parse_url($_SERVER['REQUEST_URI']);
+        $this->uri = $url['path'] ?? '';
+        $this->query = $url['query'] ?? '';
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->body = $this->getRequestData();
         $this->headers = getallheaders();
@@ -56,6 +59,11 @@ final class Request
             default => []
         };
 
+    }
+
+    public function getData(string $key): mixed
+    {
+        return $this->body[$key] ?? false;
     }
 
     private static function exists($field, mixed $value, $table)
@@ -150,5 +158,15 @@ final class Request
         }
 
         return $putData;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUri(array $params = null): string
+    {
+        $urlQuery = $params ? http_build_query($params) : '';
+
+        return $this->uri . '?' . $urlQuery;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\Core\Database\DBQuery;
+use App\Core\Http\Request;
 
 class Model extends DBQuery
 {
@@ -183,5 +184,56 @@ class Model extends DBQuery
         return null;
     }
 
+
+    public static function paginate(int $perPage = 10, array $attributes = ['*'], int $currentPage = null): array|false
+    {
+        $model = new static();
+        $request = Request::getRequest();
+
+        $numRows = $model->select(['COUNT(*) as selected_rows'])->first()['selected_rows'];
+
+        $numPages = round($numRows / $perPage);
+
+        if ($countingQuery = $model->getWithCountQuery()) {
+            $attributes[] = $countingQuery;
+        }
+
+        $page = $currentPage ?:
+            $request->getData('page') ?: 1;
+
+        if ($page < 1) $page = 1;
+        $nextPage = $page + 1;
+        $previusPage = $page <= 1 ? null : $page - 1;
+
+        $offset = $perPage * ($page - 1);
+        $limit = $perPage * $page;
+
+        if ($limit >= $numRows) {
+            $limit = $numRows;
+            $nextPage = null;
+        }
+
+        if ($limit < $offset) return false;
+
+        $finded = $model->select($attributes)
+            ->offset($offset)
+            ->limit($limit)->get();
+
+        $itens = array_map(function ($model) {
+            $model = new static($model);
+            $model->filterHiddens();
+            return static::afterFind($model);
+        }, $finded);
+
+        return [
+            'itens' => $itens,
+            'currentPage' => $page,
+            'numPages' => $numPages,
+            'nextPage' => $nextPage,
+            'previusPage' => $previusPage,
+            'nextPageUrl' => $nextPage ? $request->getUri(['page' => $nextPage]) : null,
+            'previusPageUrl' => $previusPage ? $request->getUri(['page' => $previusPage]) : null,
+        ];
+    }
 
 }

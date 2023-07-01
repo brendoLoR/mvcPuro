@@ -30,7 +30,7 @@ class UserDrinkController extends BaseController
             return $this->abort(501, "Error on server");
         }
 
-        return $this->response()->status(200)->message("User updated")->json([
+        return $this->response()->status(200)->message("Drink registreded")->json([
             'user' => User::find($user_id)->attributes,
         ]);
     }

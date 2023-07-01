@@ -15,6 +15,7 @@ class DBQuery
 
     protected array $conditions = [];
 
+    protected int $offset;
     protected int $limit;
 
 
@@ -56,6 +57,7 @@ class DBQuery
 
         return ($result = ($this->getExecutor())()) ? $result[0] : 0;
     }
+
     public function insert(array $fields): mixed
     {
         $this->type = 'insert';
@@ -71,6 +73,7 @@ class DBQuery
 
         return ($this->getExecutor())();
     }
+
     public function deleteQuery($id, $idName = 'id'): mixed
     {
         $this->type = 'delete';
@@ -121,6 +124,13 @@ class DBQuery
         return $this;
     }
 
+    public function offset(int $offset): static
+    {
+        $this->offset = $offset;
+
+        return $this;
+    }
+
     public function query(bool $valueted = false): string
     {
         return match ($this->type) {
@@ -161,9 +171,9 @@ class DBQuery
     {
         return array_reduce($this->conditions, function ($query, $condition) {
             return $query . sprintf(" %s %s %s ?",
-                empty($query) ? "" : $condition['boolean'],
-                $condition['field'],
-                $condition['operation']);
+                    empty($query) ? "" : $condition['boolean'],
+                    $condition['field'],
+                    $condition['operation']);
         }, "");
     }
 
@@ -188,7 +198,11 @@ class DBQuery
             $base .= " LIMIT $this->limit";
         }
 
-        if($valueted){
+        if (isset($this->offset) && $this->offset > 0) {
+            $base .= " OFFSET $this->offset";
+        }
+
+        if ($valueted) {
             $base = $this->mergeQueryValues($base, $this->getConditionsValues());
         }
         return $base;
@@ -238,7 +252,7 @@ class DBQuery
 
     private function mergeQueryValues(string $query, array $values): string
     {
-        while (($pos = strpos($query, '?')) && !empty($values)){
+        while (($pos = strpos($query, '?')) && !empty($values)) {
             $query = substr_replace($query, array_shift($values), $pos);
         }
         return $query;

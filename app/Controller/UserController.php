@@ -12,7 +12,7 @@ class UserController extends BaseController
         return $this->response()->status(200)
             ->message('Index')
             ->json([
-                'user' => User::all(),
+                'user' => User::paginate(),
             ]);
     }
 
