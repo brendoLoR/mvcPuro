@@ -1,9 +1,0 @@
-Order deny,allow
-Deny from all
-<FilesMatch "index\.php|index\.html">
-  Allow from all
-</FilesMatch>
-
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)＄ index.php

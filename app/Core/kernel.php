@@ -17,7 +17,7 @@ Response::getResponse();
 /**
  * load routes
  */
-require_once __DIR__ . '/../../routes/api.php';
+require_once __DIR__ . '/../routes/api.php';
 
 $action = ((new Route())($routes, $request->uri));
 

@@ -56,6 +56,20 @@ $routes = [
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
+        'route' => '/^user\/ranking\/(?P<year>\d+)\/(?P<month>\d+)\/(?P<day>\d+)$/',
+        'parameters' => ['year', 'month', 'day'],
+        'method' => 'GET',
+        'action' => [UserDrinkController::class, 'ranking'],
+        'middlewares' => [AuthUserMiddleware::class,]
+    ],
+    [
+        'route' => '/^user\/ranking\/(?P<days>\d+)$/',
+        'parameters' => ['days'],
+        'method' => 'GET',
+        'action' => [UserDrinkController::class, 'rankingInterval'],
+        'middlewares' => [AuthUserMiddleware::class,]
+    ],
+    [
         'route' => '/^user$/',
         'method' => 'POST',
         'action' => [UserController::class, 'create'],

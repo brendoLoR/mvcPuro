@@ -91,7 +91,7 @@ class DBQuery
 
     public function order(string $columnName, string $ordening = 'asc'): static
     {
-        $this->order[] = ["$columnName $ordening"];
+        $this->order[] = "$columnName $ordening";
 
         return $this;
     }
@@ -182,14 +182,9 @@ class DBQuery
      */
     private function getSelectQuery(bool $valueted = false): string
     {
-        $base = sprintf(/** @lang text */ "SELECT %s FROM %s WHERE %s",
-            implode(',', $this->fields), $this->tableName, $this->getConditionsQuery());
+        $base = sprintf(/** @lang text */ "SELECT %s FROM %s %s WHERE %s",
+            implode(',', $this->fields), $this->tableName, $this->getJoin(), $this->getConditionsQuery());
 
-        foreach ($this->joins as $join) {
-            $base .= sprintf("%s JOIN %s as %s ON %s", $join['type'], $join['table'], $join['alias'], $join['on']);
-        }
-
-        $orderBy = implode(',', $this->order);
 
         if (isset($this->limit) && $this->limit > 0) {
             $base .= " LIMIT $this->limit";
@@ -199,13 +194,11 @@ class DBQuery
             $base .= " OFFSET $this->offset";
         }
 
-        if(isset($this->group)){
-            $base .= " GROUP BY " . implode(',',$this->group);
+        if (isset($this->group)) {
+            $base .= " GROUP BY " . implode(',', $this->group);
         }
 
-        if (!empty($orderBy)) {
-            $base .= "ORDER $orderBy";
-        }
+        $base .= $this->getOrderBy();
 
         if ($valueted) {
             $base = $this->mergeQueryValues($base, $this->getConditionsValues());
@@ -261,6 +254,31 @@ class DBQuery
             $query = substr_replace($query, array_shift($values), $pos);
         }
         return $query;
+    }
+
+    /**
+     * @param string $base
+     * @return string
+     */
+    private function getJoin(): string
+    {
+        foreach ($this->joins as $join) {
+            return sprintf(" %s JOIN %s %s ON %s ", $join['type'], $join['table'], $join['alias'], $join['on']);
+        }
+        return '';
+    }
+
+    /**
+     * @param string $orderBy
+     * @return string
+     */
+    private function getOrderBy(): string
+    {
+        $orderBy = implode(',', $this->order);
+        if (!empty($orderBy)) {
+            return " ORDER BY $orderBy ";
+        }
+        return '';
     }
 
 }

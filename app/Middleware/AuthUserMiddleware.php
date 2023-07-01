@@ -8,6 +8,9 @@ use App\Model\User;
 
 class AuthUserMiddleware extends BaseMiddleware
 {
+    /**
+     * @throws \Exception
+     */
     public function __invoke(Request $request): bool
     {
         if($request->authorizarion !== false && $user = User::checkToken($request->authorizarion)){
