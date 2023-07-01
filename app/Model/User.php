@@ -20,11 +20,11 @@ class User extends Model
         $this->drink = new Drink();
     }
 
-    public function drinks(): \App\Core\Database\DBQuery
+    public function drinks(array $attributes = ['*']): \App\Core\Database\DBQuery
     {
         return $this->drink
             ->where('user_id', '=', $this->getAttribute('id'))
-            ->select();
+            ->select($attributes);
     }
 
     protected function getWithCountQuery(): null|string

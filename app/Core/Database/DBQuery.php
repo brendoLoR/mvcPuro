@@ -98,7 +98,7 @@ class DBQuery
 
     public function group(array $fields): static
     {
-        $this->group = $fields;
+        $this->group[] = implode(',', $fields);
 
         return $this;
     }
@@ -190,9 +190,6 @@ class DBQuery
         }
 
         $orderBy = implode(',', $this->order);
-        if (!empty($orderBy)) {
-            $base .= "ORDER $orderBy";
-        }
 
         if (isset($this->limit) && $this->limit > 0) {
             $base .= " LIMIT $this->limit";
@@ -200,6 +197,14 @@ class DBQuery
 
         if (isset($this->offset) && $this->offset > 0) {
             $base .= " OFFSET $this->offset";
+        }
+
+        if(isset($this->group)){
+            $base .= " GROUP BY " . implode(',',$this->group);
+        }
+
+        if (!empty($orderBy)) {
+            $base .= "ORDER $orderBy";
         }
 
         if ($valueted) {

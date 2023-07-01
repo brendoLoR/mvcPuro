@@ -49,6 +49,8 @@ class DB
             $this->connect();
             $this->PDO->beginTransaction();
 
+            $this->PDO->exec("SET sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));");
+
             $sth = $this->PDO->prepare($query);
             if (!$sth->execute($values)) {
                 $this->PDO->rollBack();
@@ -68,7 +70,7 @@ class DB
             return $result;
         } catch (\Exception $e) {
             $this->PDO->rollBack();
-            throw new \Exception("Erro ao executar: {$query} {$e->getMessage()} {$e->getTraceAsString()}" );
+            throw new \Exception("Erro ao executar: {$query} {$e->getMessage()} {$e->getTraceAsString()}");
         }
     }
 

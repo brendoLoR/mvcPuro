@@ -15,8 +15,8 @@ class UserDrinkController extends BaseController
     {
         if ($this->request()->user()->getAttribute('id') != $user_id) {
             return $this->abort();
-
         }
+
         if (!$validated = $this->request()->validate([
             'drink' => ['required', 'instanceOf:' . FILTER_VALIDATE_INT],
         ])) {
@@ -35,5 +35,28 @@ class UserDrinkController extends BaseController
         ]);
     }
 
+
+    public function history($user_id): Response
+    {
+        if (($user = $this->request()->user())->getAttribute('id') != $user_id) {
+            return $this->abort();
+        }
+
+        if (!$drinkHistory = $user->drinks()
+            ->select(["DISTINCT DATE(created_at) as `date`", "SUM(drink) as drink_sum", "COUNT(id) as register_count"])
+            ->group(["`date`"])->get()) {
+
+            return $this->response()->message("Historic not found")
+                ->status(404)->json([]);
+        }
+
+        return $this->response()->message("This is your historic")
+            ->json(['user' => $user, 'history' => $drinkHistory]);
+    }
+
+    public function ranking()
+    {
+
+    }
 
 }

@@ -49,6 +49,13 @@ $routes = [
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
+        'route' => '/^user\/(?P<user_id>\d+)\/history$/',
+        'parameters' => ['user_id',],
+        'method' => 'GET',
+        'action' => [UserDrinkController::class, 'history'],
+        'middlewares' => [AuthUserMiddleware::class,]
+    ],
+    [
         'route' => '/^user$/',
         'method' => 'POST',
         'action' => [UserController::class, 'create'],
