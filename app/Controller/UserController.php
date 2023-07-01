@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Core\Http\Response;
 use App\Model\User;
+use App\Services\UserService;
 
 class UserController extends BaseController
 {
@@ -40,7 +41,7 @@ class UserController extends BaseController
             return $this->abort(400, "Request error");
         }
 
-        if (!($user = User::create($validated))) {
+        if (!($user = UserService::createUser($validated))) {
             return $this->abort(501, "Error on server");
         }
 
@@ -66,7 +67,7 @@ class UserController extends BaseController
             return $this->abort(400, "Request error");
         }
 
-        if (!$user->update($validated)) {
+        if (!UserService::updateUser($validated, $user)) {
             return $this->abort(501, "Error on server");
         }
 
@@ -74,7 +75,6 @@ class UserController extends BaseController
             'userId' => $user->getAttribute('id') ?? '',
         ]);
     }
-
 
     public function delete($user_id): Response
     {
@@ -84,7 +84,7 @@ class UserController extends BaseController
         return $this->response()->status(200)
             ->message('Index')
             ->json([
-                'deleted' => (new User())->delete($user_id),
+                'deleted' => UserService::deleteUserById($user_id),
             ]);
     }
 
