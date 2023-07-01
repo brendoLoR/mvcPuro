@@ -27,7 +27,7 @@ function submitFormRegister() {
     let validated = validateForm('register-form', [
         'email', 'password', 'name'
     ]);
-    postData("/user",
+    postData("/users",
         {
             'name': validated['name'],
             'email': validated['email'],
@@ -41,7 +41,7 @@ function submitFormEditUser() {
     let validated = validateForm('edit-form', [
         'email', 'name'
     ]);
-    postData("/user/" + userId,
+    postData("/users/" + userId,
         {
             'name': validated['name'],
             'email': validated['email'],
@@ -54,14 +54,14 @@ function submitFormEditUser() {
 }
 
 function deleteMyUser() {
-    postData(`/user/${userId}`,
+    postData(`/users/${userId}`,
         {}, 'User Deleted', function (data) {
             setOutput(data)
         }, true, 'DELETE')
 }
 
 function drinkCoffe(drinks) {
-    postData(`/user/${userId}/drink`,
+    postData(`/users/${userId}/drink`,
         {
             'drink': drinks,
         },
@@ -77,7 +77,7 @@ function getListOfUsers() {
         alert("Do login first")
         return;
     }
-    getBase('/user')
+    getBase('/users')
 }
 
 function getMyUser() {
@@ -85,7 +85,7 @@ function getMyUser() {
         alert("Do login first")
         return;
     }
-    getBase("/user/" + userId);
+    getBase("/users/" + userId);
 }
 
 
@@ -94,7 +94,7 @@ function getRankingInterval(interval = 1) {
         alert("Do login first")
         return;
     }
-    getBase('/user/ranking/' + interval);
+    getBase('/users/ranking/' + interval);
 }
 
 function getRankingDate(date) {
@@ -105,7 +105,7 @@ function getRankingDate(date) {
 
     date = date.split('-')
 
-    getBase(`/user/ranking/${date[0]}/${date[1]}/${date[2]}`);
+    getBase(`/users/ranking/${date[0]}/${date[1]}/${date[2]}`);
 }
 
 function getDrinkHistoric() {
@@ -114,7 +114,7 @@ function getDrinkHistoric() {
         return;
     }
 
-    getBase(`/user/${userId}/history`);
+    getBase(`/users/${userId}/history`);
 }
 
 function postData(route, data = {}, message = '', callback = function (data) {

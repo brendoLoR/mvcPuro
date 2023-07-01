@@ -21,49 +21,49 @@ $routes = [
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
-        'route' => '/^user\/(?P<user_id>\d+)$/',
+        'route' => '/^users\/(?P<user_id>\d+)$/',
         'parameters' => ['user_id',],
         'method' => 'GET',
         'action' => [UserController::class, 'show'],
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
-        'route' => '/^user\/(?P<user_id>\d+)$/',
+        'route' => '/^users\/(?P<user_id>\d+)$/',
         'parameters' => ['user_id',],
         'method' => 'PUT',
         'action' => [UserController::class, 'update'],
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
-        'route' => '/^user\/(?P<user_id>\d+)$/',
+        'route' => '/^users\/(?P<user_id>\d+)$/',
         'parameters' => ['user_id',],
         'method' => 'DELETE',
         'action' => [UserController::class, 'delete'],
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
-        'route' => '/^user\/(?P<user_id>\d+)\/drink$/',
+        'route' => '/^users\/(?P<user_id>\d+)\/drink$/',
         'parameters' => ['user_id',],
         'method' => 'POST',
         'action' => [UserDrinkController::class, 'drink'],
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
-        'route' => '/^user\/(?P<user_id>\d+)\/history$/',
+        'route' => '/^users\/(?P<user_id>\d+)\/history$/',
         'parameters' => ['user_id',],
         'method' => 'GET',
         'action' => [UserDrinkController::class, 'history'],
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
-        'route' => '/^user\/ranking\/(?P<year>\d+)\/(?P<month>\d+)\/(?P<day>\d+)$/',
+        'route' => '/^users\/ranking\/(?P<year>\d+)\/(?P<month>\d+)\/(?P<day>\d+)$/',
         'parameters' => ['year', 'month', 'day'],
         'method' => 'GET',
         'action' => [UserDrinkController::class, 'ranking'],
         'middlewares' => [AuthUserMiddleware::class,]
     ],
     [
-        'route' => '/^user\/ranking\/(?P<days>\d+)$/',
+        'route' => '/^users\/ranking\/(?P<days>\d+)$/',
         'parameters' => ['days'],
         'method' => 'GET',
         'action' => [UserDrinkController::class, 'rankingInterval'],
