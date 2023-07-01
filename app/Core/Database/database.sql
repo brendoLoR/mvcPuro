@@ -6,7 +6,7 @@ CREATE TABLE users
     password varchar(200) NOT NULL,
     token    varchar(200) NULL,
     CONSTRAINT users_pk PRIMARY KEY (id)
-)
+);
 CREATE TABLE drinks
 (
     id         BIGINT auto_increment NOT NULL,
