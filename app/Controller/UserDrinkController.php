@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Core\Http\Response;
 use App\Model\Drink;
 use App\Model\User;
+use App\Services\RankingService;
+use DateTime;
 
 class UserDrinkController extends BaseController
 {
@@ -54,8 +56,38 @@ class UserDrinkController extends BaseController
             ->json(['user' => $user, 'history' => $drinkHistory]);
     }
 
-    public function ranking()
+    public function ranking(int $year, int $month, int $day)
     {
+        if (!$date = DateTime::createFromFormat('Y-m-d H:i:s', "$year-$month-$day 00:00:00")) {
+            return $this->abort(400, "Invalid date format, expected: Y-m-d, redived: {$date->format('Y-m-d')}");
+        }
+
+        if (!$ranking = (new RankingService())((clone $date)->add(new \DateInterval('PT24H')), $date)) {
+            return $this->response()->message("Ranking not found")
+                ->status(404)->json([]);
+        }
+
+        return $this->response()->message("This is the ranking of day: {$date->format('Y-m-d')}")
+            ->json(['date' => $date->format('Y-m-d'), 'ranking' => $ranking]);
+
+    }
+
+    public function rankingInterval(int $days)
+    {
+        if (!$date = new DateTime()) {
+            return $this->abort(400, "Invalid date format, expected: Y-m-d, redived: {$date->format('Y-m-d')}");
+        }
+
+        if (!$ranking = (new RankingService())($date, interval: $days)) {
+            return $this->response()->message("Ranking not found")
+                ->status(404)->json([]);
+        }
+
+        return $this->response()->message("This is the ranking of day: {$date->format('Y-m-d')}")
+            ->json([
+                'interval' => $days,
+                'finishDate' => $date->format('Y-m-d'),
+                'ranking' => $ranking]);
 
     }
 
