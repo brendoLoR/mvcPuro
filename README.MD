@@ -18,6 +18,7 @@ O teste consiste na criação de uma api para registrar a quantidade de vezes qu
 ```bash
   cp ./app/Core/Database/config.exemple.php ./app/Core/Database/config.php 
 ```
+Configure a base de dados de acordo com o indicado:
 
     'driver' => 'mysql',
     'host' => 'localhost',
@@ -32,6 +33,8 @@ para criar as estruturas necessárias.
 ```bash
   cd ./public && php -S localhost:8000 
 ```
+
+Acesse `http://localhost:8000` de um navegador para iteragir com a interface web de testes
 
 <h3>Endpoints implementados:</h3>
 <p> - obrigatórios:</p>
