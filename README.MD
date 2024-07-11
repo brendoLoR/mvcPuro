@@ -1,4 +1,4 @@
-Esse preojeto foi feito para atender desafio técnico para vaga de programador Back-end PHP na empresa Mosyle
+Esse preojeto foi feito para atender desafio técnico para vaga de programador Back-end PHP
 
 O teste consiste na criação de uma api para registrar a quantidade de vezes que seus usuário bebem café por dia
 
